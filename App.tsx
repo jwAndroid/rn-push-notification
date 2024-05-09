@@ -3,7 +3,7 @@
  */
 
 import messaging from '@react-native-firebase/messaging';
-import React, {useCallback, useEffect} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   PermissionsAndroid,
@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 
 const App = () => {
+  const [isAccepted, setIsAccepted] = useState<boolean>(false);
+
   useEffect(() => {
     const requestUserPermission = async () => {
       if (Platform.OS === 'android') {
@@ -29,11 +31,7 @@ const App = () => {
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-      if (enabled) {
-        console.log(authStatus);
-        // const token = await messaging().getToken();
-        // console.log('FCM token:', token);
-      }
+      setIsAccepted(enabled);
     };
 
     requestUserPermission();
@@ -49,25 +47,18 @@ const App = () => {
   }, []);
 
   const getToken = useCallback(async () => {
-    try {
-      const token = await messaging().getToken();
-      console.log('FCM token:', token);
-    } catch (error) {
-      console.error(error);
+    if (isAccepted) {
+      try {
+        const token = await messaging().getToken();
+        console.log('FCM token:', token);
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }, []);
-
-  // const getRegisterDiToken = useCallback(async () => {
-  //   try {
-  //     const token = await messaging().getToken();
-  //     console.log('FCM token:', token);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }, []);
+  }, [isAccepted]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{flex: 1}}>
         <Pressable
           style={{width: 100, height: 60, backgroundColor: '#000'}}
@@ -78,4 +69,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default memo(App);
