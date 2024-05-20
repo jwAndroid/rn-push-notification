@@ -33,7 +33,6 @@ const App = () => {
 
       setIsAccepted(enabled);
     };
-
     requestUserPermission();
   }, []);
 
@@ -42,7 +41,6 @@ const App = () => {
       console.log(remoteMessage);
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
-
     return unsubscribe;
   }, []);
 
